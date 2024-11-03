@@ -39,6 +39,9 @@ class LPIPS(nn.Module):
         return model
 
     def forward(self, input, target):
+        if input.shape[-1] != 256:
+            input = nn.functional.interpolate(input, (256, 256), mode='bicubic')
+            target = nn.functional.interpolate(target, (256, 256), mode='bicubic')
         in0_input, in1_input = (self.scaling_layer(input), self.scaling_layer(target))
         outs0, outs1 = self.net(in0_input), self.net(in1_input)
         feats0, feats1, diffs = {}, {}, {}
